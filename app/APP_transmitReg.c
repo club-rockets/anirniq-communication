@@ -40,6 +40,7 @@ void tsk_transmitReg(void const * argument){
 
 	osEvent rxEvent;
 	union rxReg reg;
+
 	while(1){
 		rxEvent = osMessageGet(rxRegsHandle,osWaitForever);
 		reg.UINT = rxEvent.value.v;
