@@ -32,7 +32,8 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bsp_can.h"
+#include "stdint.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -42,7 +43,12 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#ifdef CAN_BOARD
+#undef CAN_BOARD
+#define CAN_BOARD COMMUNICATION
+#else
+#define CAN_BOARD COMMUNICATION
+#endif
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

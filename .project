@@ -25,6 +25,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>interfaces</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/shared/interfaces</locationURI>
+		</link>
+		<link>
 			<name>Drivers/can</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/shared/drivers/can</locationURI>

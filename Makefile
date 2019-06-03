@@ -72,7 +72,8 @@ app/APP_transmitReg.c \
 ../shared/drivers/can/can_driver.c \
 ../shared/bsp/bsp_can_regdef.c \
 ../shared/bsp/bsp_can.c \
-Drivers/uart1.c
+Drivers/uart1.c \
+../shared/interfaces/radio/radio_packet.c 
 
 # ASM sources
 ASM_SOURCES =  \
@@ -142,7 +143,8 @@ C_INCLUDES =  \
 -Ibsp \
 -I../shared/bsp \
 -I../shared/drivers/can \
--I../shared/interfaces
+-I../shared/interfaces \
+-I../shared/interfaces/radio 
 
 
 # compile gcc flags

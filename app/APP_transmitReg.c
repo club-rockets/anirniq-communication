@@ -20,6 +20,8 @@
 #include "id.h"
 #include "cmsis_os.h"
 #include "bsp_can_regdef.h"
+#include "radio_packet.h"
+#include "string.h"
 
 uint8_t txBuff[50] = {0};
 
@@ -40,13 +42,19 @@ void tsk_transmitReg(void const * argument){
 
 	osEvent rxEvent;
 	union rxReg reg;
+	radio_packet_t packet = {0};
 
 	while(1){
 		rxEvent = osMessageGet(rxRegsHandle,osWaitForever);
 		reg.UINT = rxEvent.value.v;
-		uart1_transmit((uint8_t*)&reg,sizeof(union rxReg));
 
+		memset((void*)(&packet),0,sizeof(radio_packet_t));
+		packet.node = reg.reg.board;
+		packet.message_id = reg.reg.id;
+		memcpy(&(packet.payload),(void*)(&(can_registers[packet.node][packet.message_id].data)),sizeof(radio_packet_payload_t));
+		packet.checksum = radio_compute_crc(&packet);
 
+		uart1_transmit((uint8_t*)(&packet),sizeof(packet));
 
 	}
 }
