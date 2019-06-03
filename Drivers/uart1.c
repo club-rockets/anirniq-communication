@@ -7,6 +7,8 @@
 
 #include "uart1.h"
 
+static void(*uart1_rxCallback)(void) = 0;
+
 volatile struct{
 	uint8_t start,end;
 	uint8_t Buff[UART1_BUFFER_SIZE];
@@ -60,6 +62,20 @@ uint32_t uart1_transmit(uint8_t*buff,uint8_t size){
 	return 1;
 }
 
+uint8_t uart1_rxBuffAvailable(){
+	return !(uart1_RxBuff.end == uart1_RxBuff.start);
+}
+
+uint8_t uart1_get(){
+	uart1_RxBuff.start++;
+	uart1_RxBuff.start%=UART1_BUFFER_SIZE;
+	return uart1_RxBuff.Buff[uart1_RxBuff.start];
+}
+
+void uart1_registerRxCallback(void (*callback)(void)){
+	uart1_rxCallback = callback;
+}
+
 void USART1_IRQHandler(){
 	if(USART1->SR & USART_SR_TXE){
 		//if tx buffer not empty
@@ -70,8 +86,13 @@ void USART1_IRQHandler(){
 		}
 		else USART1->CR1 &=~USART_CR1_TXEIE;
 	}
-	else if(USART1->SR & USART_SR_TXE){
-
+	if(USART1->SR & USART_SR_RXNE){
+		uart1_RxBuff.end++;
+		uart1_RxBuff.end%=UART1_BUFFER_SIZE;
+		uart1_RxBuff.Buff[uart1_RxBuff.end] = USART1->DR;
+		if(uart1_rxCallback){
+			uart1_rxCallback();
+		}
 	}
 }
 

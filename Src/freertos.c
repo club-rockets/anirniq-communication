@@ -51,6 +51,7 @@ osThreadId tsk_heartBeatID;
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId app_transmitRegHandle;
+osThreadId app_receiveRegHandle;
 osMessageQId rxRegsHandle;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -60,6 +61,7 @@ osMessageQId rxRegsHandle;
 
 void StartDefaultTask(void const * argument);
 extern void tsk_transmitReg(void const * argument);
+extern void tsk_receiveReg(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -118,6 +120,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of app_transmitReg */
   osThreadDef(app_transmitReg, tsk_transmitReg, osPriorityHigh, 0, 128);
   app_transmitRegHandle = osThreadCreate(osThread(app_transmitReg), NULL);
+
+  /* definition and creation of app_receiveReg */
+  osThreadDef(app_receiveReg, tsk_receiveReg, osPriorityNormal, 0, 128);
+  app_receiveRegHandle = osThreadCreate(osThread(app_receiveReg), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

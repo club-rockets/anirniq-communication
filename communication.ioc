@@ -2,7 +2,7 @@
 FREERTOS.FootprintOK=true
 FREERTOS.IPParameters=Tasks01,configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY,FootprintOK,Queues01
 FREERTOS.Queues01=rxRegs,16,can_reg_t*,0,Dynamic,NULL,NULL
-FREERTOS.Tasks01=defaultTask,0,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;app_transmitReg,2,128,tsk_transmitReg,As external,NULL,Dynamic,NULL,NULL
+FREERTOS.Tasks01=defaultTask,0,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;app_transmitReg,2,128,tsk_transmitReg,As external,NULL,Dynamic,NULL,NULL;app_receiveReg,0,128,tsk_receiveReg,As external,NULL,Dynamic,NULL,NULL
 FREERTOS.configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY=5
 File.Version=6
 KeepUserPlacement=true

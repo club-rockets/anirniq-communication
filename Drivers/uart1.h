@@ -16,7 +16,10 @@ void uart1_init();
 
 uint32_t uart1_transmit(uint8_t*buff,uint8_t size);
 
+uint8_t uart1_rxBuffAvailable();
 
+uint8_t uart1_get();
 
+void uart1_registerRxCallback(void (*callback)(void));
 
 #endif /* DRIVERS_UART1_H_ */
