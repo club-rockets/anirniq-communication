@@ -13,7 +13,13 @@
 
 #include "cmsis_os.h"
 
-
+union rxReg{
+	uint32_t UINT;
+	struct{
+		uint16_t board;
+		uint16_t id;
+	} reg;
+};
 
 void tsk_transmitReg(void const * argument);
 

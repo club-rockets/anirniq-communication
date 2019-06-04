@@ -23,17 +23,11 @@
 #include "radio_packet.h"
 #include "string.h"
 
+
+
 uint8_t txBuff[50] = {0};
 
 extern osMessageQId rxRegsHandle;
-
-union rxReg{
-	uint32_t UINT;
-	struct{
-		uint16_t board;
-		uint16_t id;
-	} reg;
-};
 
 void tsk_transmitReg(void const * argument){
 
