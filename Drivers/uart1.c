@@ -7,7 +7,7 @@
 
 #include "uart1.h"
 
-static void(*uart1_rxCallback)(void) = 0;
+static void(*volatile uart1_rxCallback)(void) = 0;
 
 volatile struct{
 	uint8_t start,end;

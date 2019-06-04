@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=C:/Users/Marc-Andre/Documents/Repos/anirniq/communication/Inc
+HeaderPath=C:/Users/Marc-Andre/Documents/repos/anirniq/communication/Inc
 HeaderFiles=gpio.h;FreeRTOSConfig.h;spi.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;usart.h;
-SourcePath=C:/Users/Marc-Andre/Documents/Repos/anirniq/communication/Src
+SourcePath=C:/Users/Marc-Andre/Documents/repos/anirniq/communication/Src
 SourceFiles=gpio.c;freertos.c;spi.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;usart.c;
 
 [PreviousLibFiles]
