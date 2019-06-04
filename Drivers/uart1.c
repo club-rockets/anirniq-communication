@@ -37,6 +37,7 @@ void uart1_init() {
 
 	//enable usart1 in nvic
 	NVIC_EnableIRQ(37);
+	NVIC_SetPriority(37, 11);
 }
 
 
