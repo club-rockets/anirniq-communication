@@ -21,6 +21,10 @@ union rxReg{
 	} reg;
 };
 
+void configPadCallbacks();
+
+void configLaunchCallbacks();
+
 void tsk_transmitReg(void const * argument);
 
 void registerUpdated(uint32_t board,uint32_t regId);

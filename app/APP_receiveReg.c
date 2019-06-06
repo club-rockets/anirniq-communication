@@ -17,7 +17,6 @@
 #include "APP_transmitReg.h"
 
 #define SIGNAL_NEW_DATA (1<<0)
-#define SIGNAL_TRANSMIT_COMMAND (1<<1)
 
 extern osThreadId app_receiveRegHandle;
 
@@ -58,13 +57,16 @@ void tsk_receiveReg(void const * argument){
 					//the message is valid
 					packetBuffIndex = 0;
 
-					//send packet on internal can bus
-					can_canSetAnyRegisterData(packetBuff.packet.node,packetBuff.packet.message_id,(can_regData_u*)(&(packetBuff.packet.payload)));
-
-					//send confirmation to the base station
-					regConf.reg.board = packetBuff.packet.node;
-					regConf.reg.id = packetBuff.packet.message_id;
-					osMessagePut(rxRegsHandle,regConf.UINT,0);
+					//send packet on internal can bus call callback only if board is com
+					if (can_canSetAnyRegisterData(packetBuff.packet.node,\
+							packetBuff.packet.message_id,\
+							(can_regData_u*)(&(packetBuff.packet.payload)),\
+							(packetBuff.packet.node == COMMUNICATION)) ){
+						//send confirmation to the base station
+						regConf.reg.board = packetBuff.packet.node;
+						regConf.reg.id = packetBuff.packet.message_id;
+						osMessagePut(rxRegsHandle,regConf.UINT,0);
+					}
 
 				}
 				else{
@@ -78,7 +80,6 @@ void tsk_receiveReg(void const * argument){
 
 			}
 		}
-
 	}
 };
 
