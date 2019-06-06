@@ -108,6 +108,12 @@ void configPadCallbacks(){
 	can_setRegisterCallback(COMMUNICATION,CAN_COMMUNICATION_STATUS_INDEX,registerUpdated);
 	can_setRegisterCallback(ACQUISITION,CAN_ACQUISITION_STATUS_INDEX,registerUpdated);
 	can_setRegisterCallback(MOTHERBOARD,CAN_MOTHERBOARD_STATUS_INDEX,registerUpdated);
+
+	can_setRegisterCallback(ACQUISITION,CAN_ACQUISITION_GPS_LAT_INDEX,registerUpdated);
+	can_setRegisterCallback(ACQUISITION,CAN_ACQUISITION_GPS_LON_INDEX,registerUpdated);
+
+	can_setRegisterCallback(MISSION,CAN_MISSION_CHARGE_STATUS_INDEX,registerUpdated);
+	can_setRegisterCallback(MISSION,CAN_MISSION_ROCKET_STATUS_INDEX,registerUpdated);
 }
 void configLaunchCallbacks(){
 	transmitMode = transmitLaunch;

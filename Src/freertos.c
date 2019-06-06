@@ -49,9 +49,8 @@
 /* USER CODE BEGIN Variables */
 osThreadId tsk_heartBeatID;
 /* USER CODE END Variables */
-osThreadId defaultTaskHandle;
-osThreadId app_transmitRegHandle;
 osThreadId app_receiveRegHandle;
+osThreadId app_transmitRegHandle;
 osMessageQId rxRegsHandle;
 osTimerId regTransmiTtimerHandle;
 
@@ -60,9 +59,8 @@ osTimerId regTransmiTtimerHandle;
    
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
+void tsk_receiveReg(void const * argument);
 extern void tsk_transmitReg(void const * argument);
-extern void tsk_receiveReg(void const * argument);
 extern void regTransmiTtimer_callback(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -136,17 +134,13 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of app_receiveReg */
+  osThreadDef(app_receiveReg, tsk_receiveReg, osPriorityNormal, 0, 128);
+  app_receiveRegHandle = osThreadCreate(osThread(app_receiveReg), NULL);
 
   /* definition and creation of app_transmitReg */
   osThreadDef(app_transmitReg, tsk_transmitReg, osPriorityHigh, 0, 128);
   app_transmitRegHandle = osThreadCreate(osThread(app_transmitReg), NULL);
-
-  /* definition and creation of app_receiveReg */
-  osThreadDef(app_receiveReg, tsk_receiveReg, osPriorityNormal, 0, 128);
-  app_receiveRegHandle = osThreadCreate(osThread(app_receiveReg), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -156,23 +150,23 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_tsk_receiveReg */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the app_receiveReg thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
+/* USER CODE END Header_tsk_receiveReg */
+__weak void tsk_receiveReg(void const * argument)
 {
 
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN tsk_receiveReg */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END tsk_receiveReg */
 }
 
 /* Private application code --------------------------------------------------*/
