@@ -22,10 +22,10 @@ void uart1_init() {
 	//enable the peripheral
 	USART1->CR1 |= USART_CR1_UE;
 
-	//set baud rate settings 256000
+	//set baud rate settings 460800
 	//settings for 84mhz APB clock
 
-	USART1->BRR = 20<<4 | 0x08;
+	USART1->BRR = 11<<4 | 0x6;
 
 	//enable receiver mode
 	USART1->CR1 |= USART_CR1_RE;
