@@ -114,6 +114,10 @@ void configPadCallbacks(){
 
 	can_setRegisterCallback(MISSION,CAN_MISSION_CHARGE_STATUS_INDEX,registerUpdated);
 	can_setRegisterCallback(MISSION,CAN_MISSION_ROCKET_STATUS_INDEX,registerUpdated);
+
+	can_setRegisterCallback(COMMUNICATION,CAN_COMMUNICATION_CONTROL_EJECT_DROGUE_INDEX,registerUpdated);
+	can_setRegisterCallback(COMMUNICATION,CAN_COMMUNICATION_CONTROL_EJECT_MAIN_INDEX,registerUpdated);
+	can_setRegisterCallback(COMMUNICATION,CAN_COMMUNICATION_CONTROL_SLEEP_INDEX,registerUpdated);
 }
 void configLaunchCallbacks(){
 	transmitMode = transmitLaunch;
