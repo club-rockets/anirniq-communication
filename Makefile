@@ -74,7 +74,8 @@ app/APP_receiveReg.c \
 ../shared/bsp/bsp_can_regdef.c \
 ../shared/bsp/bsp_can.c \
 Drivers/uart1.c \
-../shared/interfaces/radio/radio_packet.c
+../shared/interfaces/radio/radio_packet.c \
+../shared/app/sd.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -142,10 +143,11 @@ C_INCLUDES =  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -Iapp \
 -Ibsp \
+-I../shared/app \
 -I../shared/bsp \
 -I../shared/drivers/can \
 -I../shared/interfaces \
--I../shared/interfaces/radio 
+-I../shared/interfaces/radio
 
 
 # compile gcc flags
