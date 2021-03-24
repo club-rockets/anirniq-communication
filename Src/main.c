@@ -20,13 +20,15 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
+#include "dma.h"
+#include "fatfs.h"
+#include "sdio.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "bsp_can.h"
-#include "uart1.h"
+#include "../../shared/app/blink.h"
+#include "../../shared/app/sd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,18 +49,31 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-extern canInstance_t can1Instance;
+//extern canInstance_t can1Instance;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/* TASK BLINK*/
+#define APP_BLINK_NAME "BLINK"
+#define APP_BLINK_PRIORITY 1
+#define APP_BLINK_SIZE 192
+StaticTask_t APP_BLINK_BUFFER;
+StackType_t APP_BLINK_STACK[ APP_BLINK_SIZE ];
+
+/* TASK SD*/
+#define APP_SD_NAME "SD"
+#define APP_SD_PRIORITY 2
+#define APP_SD_SIZE 1000
+StaticTask_t APP_SD_BUFFER;
+StackType_t APP_SD_STACK[ APP_SD_SIZE ];
 
 /* USER CODE END 0 */
 
@@ -86,24 +101,48 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  can_canInit();
-  uart1_init();
+ // can_canInit();
+ // uart1_init();
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
+  MX_SDIO_SD_Init();
+  MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
 
+  TaskHandle_t xHandle = NULL;
+
+   /* Create the task without using any dynamic memory allocation. */
+   xHandle = xTaskCreateStatic(
+            task_blink,       /* Function that implements the task. */
+            APP_BLINK_NAME,          /* Text name for the task. */
+ 		   APP_BLINK_SIZE,      /* Number of indexes in the xStack array. */
+            ( void * ) NULL,    /* Parameter passed into the task. */
+            APP_BLINK_PRIORITY,/* Priority at which the task is created. */
+ 		   APP_BLINK_STACK,          /* Array to use as the task's stack. */
+            &APP_BLINK_BUFFER );  /* Variable to hold the task's data structure. */
+
+   xHandle = xTaskCreateStatic(
+            task_sd,
+            APP_SD_NAME,
+ 		   APP_SD_SIZE,
+            ( void * ) NULL,
+            APP_SD_PRIORITY,
+ 		   APP_SD_STACK,
+            &APP_SD_BUFFER );
+
+ 	/* Start the scheduler. */
+ 	vTaskStartScheduler();
+
+
+
+
   /* USER CODE END 2 */
-
-  /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
-
-  /* Start scheduler */
-  osKernelStart();
-  
-  /* We should never get here as control is now taken by the scheduler */
+ 
+ 
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -159,60 +198,28 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint32_t can_canInit()
-{
-    //initialise IO's
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-
-    //Configure GPIO pins : PB8 PB9
-    GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    can1Instance.instance = CAN1;
-    can1Instance.debugFreeze = 0;
-    can1Instance.opMode = normal;
-    can1Instance.baudPrescaler = 3;
-    can1Instance.timeQuanta1 = 14;
-    can1Instance.timeQuanta2 = 11;
-    can1Instance.timeReSync = 2;
-
-    canInit(&can1Instance);
-    //init interruption for fan 1 fifo 0
-    can1Fifo0InitIt(&can1Instance);
-    can1Fifo0RegisterCallback(can_regUpdateCallback);
-
-    //init filters for boards
-
-    canFilter_t filter = {0};
-
-    filter.mask11.mask0 = BOARD_ID_MASK;
-    filter.mask11.ID0 = BOARD_EMERGENCY_ID_SHIFTED;
-    filter.mask11.mask1 = BOARD_ID_MASK;
-    filter.mask11.ID1 = BOARD_MISSION_ID_SHIFTED;
-    canSetFilter(&can1Instance, &filter,mask11Bit, 0, 0);
-
-    filter.mask11.mask0 = BOARD_ID_MASK;
-    filter.mask11.ID0 = BOARD_COMMUNICATION_ID_SHIFTED;
-    filter.mask11.mask1 = BOARD_ID_MASK;
-    filter.mask11.ID1 = BOARD_ACQUISITION_ID_SHIFTED;
-    canSetFilter(&can1Instance, &filter,mask11Bit, 1, 0);
-
-    filter.mask11.mask0 = BOARD_ID_MASK;
-    filter.mask11.ID0 = BOARD_MOTHERBOARD_ID_SHIFTED;
-    filter.mask11.mask1 = BOARD_ID_MASK;
-    filter.mask11.ID1 = BOARD_MOTHERBOARD_ID_SHIFTED;
-
-    canSetFilter(&can1Instance, &filter,mask11Bit, 2, 0);
-    NVIC_SetPriority(20, 10);
-    return 0;
-}
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM1 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM1) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
