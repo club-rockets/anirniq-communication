@@ -75,6 +75,27 @@ StackType_t APP_BLINK_STACK[ APP_BLINK_SIZE ];
 StaticTask_t APP_SD_BUFFER;
 StackType_t APP_SD_STACK[ APP_SD_SIZE ];
 
+/* TASK TX*/
+#define APP_TX_NAME "TX"
+#define APP_TX_PRIORITY 3
+#define APP_TX_SIZE 192
+StaticTask_t APP_TX_BUFFER;
+StackType_t APP_TX_STACK[ APP_TX_SIZE ];
+
+/* TASK RX*/
+#define APP_RX_NAME "RX"
+#define APP_RX_PRIORITY 4
+#define APP_RX_SIZE 192
+StaticTask_t APP_RX_BUFFER;
+StackType_t APP_RX_STACK[ APP_RX_SIZE ];
+
+/* TASK CAN*/
+#define APP_CAN_NAME "CAN"
+#define APP_CAN_PRIORITY 5
+#define APP_CAN_SIZE 192
+StaticTask_t APP_CAN_BUFFER;
+StackType_t APP_CAN_STACK[ APP_CAN_SIZE ];
+
 /* USER CODE END 0 */
 
 /**
@@ -119,31 +140,25 @@ int main(void)
    xHandle = xTaskCreateStatic(
             task_blink,       /* Function that implements the task. */
             APP_BLINK_NAME,          /* Text name for the task. */
- 		   APP_BLINK_SIZE,      /* Number of indexes in the xStack array. */
+			APP_BLINK_SIZE,      /* Number of indexes in the xStack array. */
             ( void * ) NULL,    /* Parameter passed into the task. */
             APP_BLINK_PRIORITY,/* Priority at which the task is created. */
- 		   APP_BLINK_STACK,          /* Array to use as the task's stack. */
+			APP_BLINK_STACK,          /* Array to use as the task's stack. */
             &APP_BLINK_BUFFER );  /* Variable to hold the task's data structure. */
 
    xHandle = xTaskCreateStatic(
             task_sd,
             APP_SD_NAME,
- 		   APP_SD_SIZE,
+			APP_SD_SIZE,
             ( void * ) NULL,
             APP_SD_PRIORITY,
- 		   APP_SD_STACK,
+			APP_SD_STACK,
             &APP_SD_BUFFER );
 
  	/* Start the scheduler. */
  	vTaskStartScheduler();
-
-
-
-
   /* USER CODE END 2 */
  
- 
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)

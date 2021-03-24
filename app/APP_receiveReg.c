@@ -24,7 +24,6 @@ extern osMessageQId rxRegsHandle;
 
 void bytesReceived();
 
-
 static union{
 	uint8_t UINT8[sizeof(radio_packet_t)];
 	radio_packet_t packet;
@@ -67,7 +66,6 @@ void tsk_receiveReg(void const * argument){
 						regConf.reg.id = packetBuff.packet.message_id;
 						osMessagePut(rxRegsHandle,regConf.UINT,0);
 					}
-
 				}
 				else{
 					//packet is invalid left shift entire buffer to recover the start of next message
@@ -77,12 +75,11 @@ void tsk_receiveReg(void const * argument){
 					}
 					--packetBuffIndex;
 				}
-
 			}
 		}
 	}
-};
+}
 
 void bytesReceived(){
-	osSignalSet(app_receiveRegHandle,SIGNAL_NEW_DATA);
+	osSignalSet(app_receiveRegHandle,SIGNAL_NEW_DATA); //Binary semaphore
 }

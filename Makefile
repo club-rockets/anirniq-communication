@@ -67,6 +67,9 @@ Src/stm32f4xx_hal_msp.c \
 Drivers/uart1.c \
 ../shared/app/sd.c \
 ../shared/app/blink.c \
+../shared/bsp/bsp_can_regdef.c \
+../shared/bsp/bsp_can.c \
+../shared/drivers/can/can_driver.c \
 Src/dma.c \
 Src/freertos.c \
 Src/bsp_driver_sd.c \
@@ -147,13 +150,12 @@ C_INCLUDES =  \
 -Ibsp \
 -IMiddlewares/FreeRTOS/include \
 -IMiddlewares/FreeRTOS/portable/GCC/ARM_CM4F \
+-IMiddlewares/Third_Party/FatFs/src \
 -I../shared/app \
 -I../shared/bsp \
 -I../shared/drivers/can \
 -I../shared/interfaces \
--I../shared/interfaces/radio \
--IMiddlewares/Third_Party/FatFs/src
-
+-I../shared/interfaces/radio
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
