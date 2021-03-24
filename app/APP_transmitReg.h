@@ -11,8 +11,6 @@
 #ifndef APP_TRANSMIT_REG_H_
 #define APP_TRANSMIT_REG_H_
 
-#include "cmsis_os.h"
-
 union rxReg{
 	uint32_t UINT;
 	struct{

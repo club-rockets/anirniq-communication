@@ -9,12 +9,12 @@
  */
 
 #include "APP_transmitReg.h"
+#include "APP_receiveReg.h"
 #include "radio_packet.h"
-#include "cmsis_os.h"
+#include "main.h"
 #include "uart1.h"
 #include "bsp_can.h"
 #include "string.h"
-#include "APP_transmitReg.h"
 
 #define SIGNAL_NEW_DATA (1<<0)
 
