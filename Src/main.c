@@ -89,13 +89,6 @@ StackType_t APP_TX_STACK[ APP_TX_SIZE ];
 StaticTask_t APP_RX_BUFFER;
 StackType_t APP_RX_STACK[ APP_RX_SIZE ];
 
-/* TASK CAN*/
-#define APP_CAN_NAME "CAN"
-#define APP_CAN_PRIORITY 5
-#define APP_CAN_SIZE 192
-StaticTask_t APP_CAN_BUFFER;
-StackType_t APP_CAN_STACK[ APP_CAN_SIZE ];
-
 /* USER CODE END 0 */
 
 /**

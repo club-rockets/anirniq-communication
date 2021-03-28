@@ -18,9 +18,8 @@
 
 #define SIGNAL_NEW_DATA (1<<0)
 
-extern osThreadId app_receiveRegHandle;
-
-extern osMessageQId rxRegsHandle;
+extern QueueHandle_t xQueueRxRegsHandle;
+static SemaphoreHandle_t xSemaphoreRxRegsHandle = NULL;
 
 void bytesReceived();
 
@@ -33,19 +32,20 @@ static uint8_t packetBuffIndex = 0;
 
 void tsk_receiveReg(void const * argument){
 	union rxReg regConf = {0};
-	osEvent evt;
+
+	vSemaphoreCreateBinary( xSemaphoreRxRegsHandle ); //Create binary semaphore
+
 	while(1){
 		//wait for uart transmission
 		uart1_registerRxCallback(bytesReceived);
-		evt = osSignalWait(SIGNAL_NEW_DATA,osWaitForever);
-		if(evt.status == osEventSignal && (evt.value.v & SIGNAL_NEW_DATA)){
+		if(xSemaphoreTake( xSemaphoreRxRegsHandle, portMAX_DELAY ) == pdTRUE){
 
 			uart1_registerRxCallback(0);
 
 			//get data from uart buffer
 			while(uart1_rxBuffAvailable()){
 				//fill the packet buffer
-				packetBuffIndex++;
+				packetBuffIndex--;
 				packetBuff.UINT8[packetBuffIndex] = uart1_get();
 				if(packetBuffIndex < (sizeof(packetBuff) - 1)){
 					continue;
@@ -64,7 +64,7 @@ void tsk_receiveReg(void const * argument){
 						//send confirmation to the base station
 						regConf.reg.board = packetBuff.packet.node;
 						regConf.reg.id = packetBuff.packet.message_id;
-						osMessagePut(rxRegsHandle,regConf.UINT,0);
+						xQueueSend( xQueueRxRegsHandle,regConf.UINT,0 );
 					}
 				}
 				else{
@@ -81,5 +81,5 @@ void tsk_receiveReg(void const * argument){
 }
 
 void bytesReceived(){
-	osSignalSet(app_receiveRegHandle,SIGNAL_NEW_DATA); //Binary semaphore
+	xSemaphoreGive( xSemaphoreRxRegsHandle );
 }
