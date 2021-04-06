@@ -9,32 +9,30 @@
  */
 
 
-#include "APP_transmitReg.h"
-
 #include "uart1.h"
 #include "stm32f4xx_hal.h"
 #include "main.h"
-#include "bsp_can.h"
-#include "enums.h"
-#include "id.h"
-#include "bsp_can_regdef.h"
-#include "radio_packet.h"
+#include "../../shared/bsp/bsp_can.h"
+#include "../../shared/interfaces/enums.h"
+#include "../../shared/interfaces/id.h"
+#include "../../shared/bsp/bsp_can_regdef.h"
+#include "../../shared/interfaces/radio/radio_packet.h"
 #include "string.h"
-
-
+#include "tx.h"
 
 uint8_t txBuff[50] = {0};
 
-extern osMessageQId rxRegsHandle;
-extern osTimerId regTransmiTtimerHandle;
+extern QueueHandle_t xQueueRxRegsHandle;
+extern TimerHandle_t regTransmiTtimerHandle;
+extern TimerHandle_t xTimers;
 
 static can_regData_u regData = {0};
 
 static enum {transmitPad,transmitLaunch} transmitMode = transmitPad;
 
-void tsk_transmitReg(void const * argument){
+void task_tx(void * pvParameters){
 
-	osEvent rxEvent;
+	BaseType_t rxEvent;
 	union rxReg reg;
 	radio_packet_t packet = {0};
 
@@ -47,20 +45,19 @@ void tsk_transmitReg(void const * argument){
 	uint32_t lastBoardIndex = 0;
 	uint32_t lastRegisterIndex = 0;
 
-	osTimerStart(regTransmiTtimerHandle,500);
+	xTimerStart( regTransmiTtimerHandle,( TickType_t )(500/portTICK_PERIOD_MS) );
 
 	while(1){
 		//if a callback enabled register is updated
 		//wait and send an other register
 		if(transmitMode == transmitLaunch){
-			rxEvent = osMessageGet(rxRegsHandle,30);
+		      rxevent = xQueueReceive( xQueueRxRegsHandle, &( reg.UINT ), ( TickType_t )(30/portTICK_PERIOD_MS) );
 		}
 		else{
-			rxEvent = osMessageGet(rxRegsHandle,osWaitForever);
+			 rxevent = xQueueReceive( xQueueRxRegsHandle, &( reg.UINT ), portMAX_DELAY );
 		}
 
-		if(rxEvent.status == osEventMessage){
-			reg.UINT = rxEvent.value.v;
+		if(rxEvent == pdTRUE){
 
 			memset((void*)(&packet),0,sizeof(radio_packet_t));
 			packet.node = reg.reg.board;
@@ -129,7 +126,7 @@ void registerUpdated(uint32_t board,uint32_t regId){
 	union rxReg reg;
 	reg.reg.board = board;
 	reg.reg.id = regId;
-	osMessagePut(rxRegsHandle,reg.UINT,0);
+	xQueueSend( xQueueRxRegsHandle,reg.UINT,0 );
 	if(board == COMMUNICATION && regId == CAN_COMMUNICATION_STATUS_INDEX){
 		can_getRegisterData(board,regId,&regData);
 		if(regData.UINT32_T == PAD_TRANSMISSION){
@@ -139,7 +136,7 @@ void registerUpdated(uint32_t board,uint32_t regId){
 	}
 }
 
-void regTransmiTtimer_callback(){
+void regTransmiTtimer_callback( TimerHandle_t xTimer ){
 	static uint8_t i = 0;
 	can_canSetRegisterData(i,0);
 	i++;

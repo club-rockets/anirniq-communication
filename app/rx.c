@@ -8,18 +8,20 @@
  *
  */
 
-#include "APP_transmitReg.h"
-#include "APP_receiveReg.h"
-#include "radio_packet.h"
+#include "rx.h"
+
+#include "../../shared/interfaces/radio/radio_packet.h"
 #include "main.h"
 #include "uart1.h"
-#include "bsp_can.h"
+#include "../../shared/bsp/bsp_can.h"
 #include "string.h"
+#include "tx.h"
 
 #define SIGNAL_NEW_DATA (1<<0)
 
-extern QueueHandle_t xQueueRxRegsHandle;
-static SemaphoreHandle_t xSemaphoreRxRegsHandle = NULL;
+QueueHandle_t xQueueRxRegsHandle;
+SemaphoreHandle_t xSemaphoreRxRegsHandle = NULL;
+StaticSemaphore_t xSemaphoreBuffer;
 
 void bytesReceived();
 
@@ -30,10 +32,10 @@ static union{
 
 static uint8_t packetBuffIndex = 0;
 
-void tsk_receiveReg(void const * argument){
+void task_rx(void * pvParameters){
 	union rxReg regConf = {0};
 
-	vSemaphoreCreateBinary( xSemaphoreRxRegsHandle ); //Create binary semaphore
+	xSemaphoreRxRegsHandle = xSemaphoreCreateBinaryStatic( &xSemaphoreBuffer ); //Create binary semaphore
 
 	while(1){
 		//wait for uart transmission

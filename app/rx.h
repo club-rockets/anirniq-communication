@@ -8,9 +8,9 @@
  *
  */
 
-#ifndef APP_APP_RECEIVEREG_H_
-#define APP_APP_RECEIVEREG_H_
+#ifndef APP_RX_H_
+#define APP_RX_H_
 
-tsk_receiveReg(void const * argument);
+void task_rx(void * pvParameters);
 
-#endif /* APP_APP_RECEIVEREG_H_ */
+#endif /* APP_RX_H_ */

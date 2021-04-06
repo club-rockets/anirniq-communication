@@ -65,6 +65,8 @@ Middlewares/FreeRTOS/portable/GCC/ARM_CM4F/port.c \
 Src/stm32f4xx_it.c \
 Src/stm32f4xx_hal_msp.c \
 Drivers/uart1.c \
+app/rx.c \
+app/tx.c \
 ../shared/app/sd.c \
 ../shared/app/blink.c \
 ../shared/bsp/bsp_can_regdef.c \

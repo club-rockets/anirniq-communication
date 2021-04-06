@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef APP_TRANSMIT_REG_H_
-#define APP_TRANSMIT_REG_H_
+#ifndef APP_TX_H_
+#define APP_TX_H_
 
 union rxReg{
 	uint32_t UINT;
@@ -23,9 +23,11 @@ void configPadCallbacks();
 
 void configLaunchCallbacks();
 
-void tsk_transmitReg(void const * argument);
+void task_tx(void * pvParameters);
 
 void registerUpdated(uint32_t board,uint32_t regId);
+
+void regTransmiTtimer_callback( TimerHandle_t xTimer );
 
 #endif //APP_TRANSMIT_REG_H_
 

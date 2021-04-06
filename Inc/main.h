@@ -39,6 +39,8 @@ extern "C" {
 #include "semphr.h"
 #include "event_groups.h"
 #include "timers.h"
+
+#include "transcript.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
