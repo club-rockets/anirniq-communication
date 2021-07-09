@@ -70,11 +70,11 @@ Src/stm32f4xx_hal_msp.c \
 app/APP_heartBeat.c \
 app/APP_transmitReg.c \
 app/APP_receiveReg.c \
-../shared/drivers/can/can_driver.c \
-../shared/bsp/bsp_can_regdef.c \
-../shared/bsp/bsp_can.c \
-Drivers/uart1.c \
-../shared/interfaces/radio/radio_packet.c
+shared/drivers/can/can_driver.c \
+shared/bsp/bsp_can_regdef.c \
+shared/bsp/bsp_can.c \
+shared/interfaces/radio/radio_packet.c \
+Drivers/uart1.c
 
 # ASM sources
 ASM_SOURCES =  \
@@ -84,7 +84,7 @@ startup_stm32f407xx.s
 #######################################
 # binaries
 #######################################
-PREFIX = arm-atollic-eabi-
+PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
 ifdef GCC_PATH
@@ -142,16 +142,17 @@ C_INCLUDES =  \
 -IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
 -Iapp \
 -Ibsp \
--I../shared/bsp \
--I../shared/drivers/can \
--I../shared/interfaces \
--I../shared/interfaces/radio 
+-Ishared/bsp \
+-Ishared/drivers/can \
+-Ishared/interfaces \
+-Ishared/interfaces/radio \
+-I.
 
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -Wpedantic -Werror -fdata-sections -ffunction-sections
 
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wpedantic -Werror -fdata-sections -ffunction-sections
 
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
