@@ -57,11 +57,17 @@ void tsk_receiveReg(void const * argument){
 					//the message is valid
 					packetBuffIndex = 0;
 
+					// FIXME: the CAN driver interface should make sure this
+					// pointer is never dereferenced to avoid alignement errors
+					void* ptr = &packetBuff.packet.payload;
+
 					//send packet on internal can bus call callback only if board is com
-					if (can_canSetAnyRegisterData(packetBuff.packet.node,\
-							packetBuff.packet.message_id,\
-							(can_regData_u*)(&(packetBuff.packet.payload)),\
-							(packetBuff.packet.node == COMMUNICATION)) ){
+					if (can_canSetAnyRegisterData(
+						packetBuff.packet.node,
+						packetBuff.packet.message_id,
+						ptr,
+						(packetBuff.packet.node == COMMUNICATION)
+					) ){
 						//send confirmation to the base station
 						regConf.reg.board = packetBuff.packet.node;
 						regConf.reg.id = packetBuff.packet.message_id;
@@ -81,7 +87,7 @@ void tsk_receiveReg(void const * argument){
 			}
 		}
 	}
-};
+}
 
 void bytesReceived(){
 	osSignalSet(app_receiveRegHandle,SIGNAL_NEW_DATA);
